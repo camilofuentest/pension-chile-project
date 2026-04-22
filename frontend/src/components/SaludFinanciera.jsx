@@ -6,9 +6,6 @@ import {
 } from 'recharts'
 import { AfpLogo } from '../utils/afpLogos'
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
 function fmt1(v) {
   if (v == null) return '—'
   return `${v.toFixed(1)}%`
@@ -23,9 +20,6 @@ function fmtMM(miles) {
 
 const MEDALS = { 0: '🥇', 1: '🥈', 2: '🥉' }
 
-// -----------------------------------------------------------------------
-// Ganancia ranking for one year — sorted by absolute profit, best → worst
-// -----------------------------------------------------------------------
 function GananciaRanking({ financiero, year }) {
   const rows = useMemo(() => {
     return Object.entries(financiero)
@@ -41,7 +35,7 @@ function GananciaRanking({ financiero, year }) {
       .sort((a, b) => b.ganancia - a.ganancia)
   }, [financiero, year])
 
-  if (!rows.length) return <p className="text-sm text-gray-400">Sin datos para {year}.</p>
+  if (!rows.length) return <p className="text-sm text-gray-400 dark:text-slate-500">Sin datos para {year}.</p>
 
   const best  = rows[0]
   const worst = rows[rows.length - 1]
@@ -55,32 +49,30 @@ function GananciaRanking({ financiero, year }) {
           return (
             <div
               key={r.afp}
-              className={`rounded-xl border px-4 py-3 flex flex-col gap-1 ${
-                isBest ? 'border-green-200 bg-green-50' : 'border-gray-100 bg-white'
+              className={`rounded-xl border px-4 py-3 flex flex-col gap-1 transition-colors ${
+                isBest
+                  ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30'
+                  : 'border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800'
               }`}
             >
-              {/* rank + worst tag */}
               <div className="flex items-center justify-between mb-1">
-                <span className="text-base">{MEDALS[i] ?? <span className="text-xs text-gray-400">#{i + 1}</span>}</span>
+                <span className="text-base">{MEDALS[i] ?? <span className="text-xs text-gray-400 dark:text-slate-500">#{i + 1}</span>}</span>
                 {isWorst && (
-                  <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                  <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
                     menor ganancia
                   </span>
                 )}
               </div>
 
-              {/* logo */}
               <AfpLogo afp={r.afp} className="h-7 w-full mb-2" />
-              <p className="font-semibold text-gray-700 text-xs leading-tight">{r.afp}</p>
+              <p className="font-semibold text-gray-700 dark:text-slate-300 text-xs leading-tight">{r.afp}</p>
 
-              {/* primary: ganancia absoluta */}
               <p className={`text-lg font-bold mt-1 leading-tight ${r.ganancia >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                 {fmtMM(r.ganancia)}
               </p>
 
-              {/* secondary: ROE with size caveat */}
               {r.roe != null && (
-                <p className="text-xs text-gray-500 font-semibold">
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-semibold">
                   ROE {fmt1(r.roe)}
                 </p>
               )}
@@ -89,8 +81,7 @@ function GananciaRanking({ financiero, year }) {
         })}
       </div>
 
-      {/* Callout */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
+      <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
         <p className="font-semibold mb-1">¿Qué significa esto para mí?</p>
         <p>
           En <strong>{year}</strong>, <strong>{best.afp}</strong> fue la AFP que más ganó
@@ -100,13 +91,12 @@ function GananciaRanking({ financiero, year }) {
             : <> <strong>{worst.afp}</strong> fue la de menor ganancia con {fmtMM(worst.ganancia)}.</>
           }
         </p>
-        <p className="mt-2 text-blue-800">
+        <p className="mt-2 text-blue-800 dark:text-blue-300">
           Esta ganancia proviene principalmente de las comisiones que pagan sus afiliados cada mes.
         </p>
       </div>
 
-      {/* ROE caveat */}
-      <p className="text-xs text-gray-400 mt-3">
+      <p className="text-xs text-gray-400 dark:text-slate-500 mt-3">
         El ROE (mostrado como dato secundario) mide eficiencia sobre el capital propio, pero
         no es directamente comparable entre AFPs de distinto tamaño o antigüedad:
         una AFP nueva tiene menos patrimonio acumulado, lo que infla o distorsiona su ROE.
@@ -116,20 +106,17 @@ function GananciaRanking({ financiero, year }) {
   )
 }
 
-// -----------------------------------------------------------------------
-// Historical ROE bar chart for one AFP
-// -----------------------------------------------------------------------
 function RoeTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   const { roe, ganancia } = payload[0].payload
   return (
-    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 shadow text-sm">
-      <p className="font-medium text-gray-700 mb-1">{label}</p>
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 shadow text-sm">
+      <p className="font-medium text-gray-700 dark:text-slate-200 mb-1">{label}</p>
       <p className={`font-bold ${roe >= 0 ? 'text-green-600' : 'text-red-500'}`}>
         Ganancia: {fmtMM(ganancia)}
       </p>
       {roe != null && (
-        <p className="text-xs text-gray-400 mt-0.5">ROE: {fmt1(roe)}</p>
+        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">ROE: {fmt1(roe)}</p>
       )}
     </div>
   )
@@ -148,22 +135,22 @@ function RoeHistory({ financiero, afp }) {
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={chartData} margin={{ top: 5, right: 10, left: 5, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
         <XAxis
           dataKey="year"
-          tick={{ fontSize: 11, fill: '#6b7280' }}
+          tick={{ fontSize: 11, fill: 'var(--chart-axis)' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
           tickFormatter={v => `$${(v / 1_000_000).toFixed(0)}`}
-          tick={{ fontSize: 11, fill: '#6b7280' }}
+          tick={{ fontSize: 11, fill: 'var(--chart-axis)' }}
           axisLine={false}
           tickLine={false}
           width={55}
         />
         <Tooltip content={<RoeTooltip />} />
-        <ReferenceLine y={0} stroke="#d1d5db" />
+        <ReferenceLine y={0} stroke="var(--chart-ref)" />
         <Bar dataKey="ganancia" radius={[3, 3, 0, 0]} maxBarSize={36}>
           {chartData.map((entry, i) => (
             <Cell
@@ -177,9 +164,6 @@ function RoeHistory({ financiero, afp }) {
   )
 }
 
-// -----------------------------------------------------------------------
-// Main component
-// -----------------------------------------------------------------------
 export default function SaludFinanciera({ financiero }) {
   const afpList  = financiero ? Object.keys(financiero).sort() : []
   const yearList = useMemo(() => {
@@ -194,49 +178,39 @@ export default function SaludFinanciera({ financiero }) {
 
   if (!financiero) return null
 
+  const selectCls = 'border border-gray-200 dark:border-slate-600 rounded px-2 py-1 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200'
+
   return (
     <section className="px-4 py-6 sm:px-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-1 border-l-4 border-blue-600 pl-3">
         AFP como negocio: ¿cuánto gana cada AFP para sus dueños?
       </h2>
-      <p className="text-sm text-gray-500 mb-5">
+      <p className="text-sm text-gray-500 dark:text-slate-400 mb-5">
         Esto no es la rentabilidad de tu fondo — es la <strong>ganancia del negocio</strong> de
         administrar pensiones. El ranking muestra cuánto dinero ganó cada AFP para sus accionistas
         en el año seleccionado, según sus estados financieros oficiales.
         Fuente: Superintendencia de Pensiones.
       </p>
 
-      {/* ---- RANKING ---- */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3 flex-wrap">
-          <h3 className="font-semibold text-gray-700">Ranking por año</h3>
-          <select
-            className="border rounded px-2 py-1 text-sm"
-            value={selectedYear}
-            onChange={e => setYear(Number(e.target.value))}
-          >
-            {yearList.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
+          <h3 className="font-semibold text-gray-700 dark:text-slate-300">Ranking por año</h3>
+          <select className={selectCls} value={selectedYear} onChange={e => setYear(Number(e.target.value))}>
+            {yearList.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
         <GananciaRanking financiero={financiero} year={selectedYear} />
       </div>
 
-      {/* ---- HISTORICAL CHART ---- */}
       <div>
         <div className="flex items-center gap-3 mb-3 flex-wrap">
-          <h3 className="font-semibold text-gray-700">Evolución histórica de ganancias</h3>
-          <select
-            className="border rounded px-2 py-1 text-sm"
-            value={selectedAfp}
-            onChange={e => setAfp(e.target.value)}
-          >
+          <h3 className="font-semibold text-gray-700 dark:text-slate-300">Evolución histórica de ganancias</h3>
+          <select className={selectCls} value={selectedAfp} onChange={e => setAfp(e.target.value)}>
             {afpList.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
         </div>
         <RoeHistory financiero={financiero} afp={selectedAfp} />
-        <p className="text-xs text-gray-400 mt-1 text-right">
+        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 text-right">
           Ganancia anual (miles de millones $) — azul = ganancia, rojo = pérdida
         </p>
       </div>

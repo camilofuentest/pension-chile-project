@@ -21,8 +21,7 @@ export default function RankingTable({ rentabilidades }) {
     { key: '15y', label: '15 años' },
   ]
 
-  // Extract the reference month label from the data (same for all AFP/fondo combos)
-  const firstEntry    = Object.values(rentabilidades)[0]
+  const firstEntry     = Object.values(rentabilidades)[0]
   const lastMonthLabel = firstEntry?.last_month_label ?? ''
 
   const rows = Object.values(rentabilidades)
@@ -38,7 +37,6 @@ export default function RankingTable({ rentabilidades }) {
       return b.value - a.value
     })
 
-  // Gap between best and worst AFP (only among those with data)
   const withData = rows.filter(r => r.value != null)
   const best  = withData[0]
   const worst = withData[withData.length - 1]
@@ -51,51 +49,41 @@ export default function RankingTable({ rentabilidades }) {
     ? Math.round(ahorroN * (Math.pow(1 + best.value / 100, n) - Math.pow(1 + worst.value / 100, n)))
     : null
 
+  const btnBase     = 'px-3 py-1 rounded text-sm font-medium border transition-colors'
+  const btnActive   = 'bg-blue-600 text-white border-blue-600'
+  const btnInactive = 'bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600'
+
   return (
     <section className="px-4 py-6 sm:px-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">Ranking de rentabilidad</h2>
-      <p className="text-sm text-gray-500 mb-1">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-1 border-l-4 border-blue-600 pl-3">Ranking de rentabilidad</h2>
+      <p className="text-sm text-gray-500 dark:text-slate-400 mb-1">
         La <strong>rentabilidad real</strong> es cuánto creció tu dinero <em>por encima de la inflación</em>.
         Si tu fondo subió 8% pero la inflación fue 5%, tu rentabilidad real fue 3% —
         eso es lo que realmente ganaste en poder de compra.
       </p>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
         Calculada hasta <strong>{lastMonthLabel}</strong>.{' '}
-        <span className="text-blue-600 font-medium">Cambia el fondo y el período</span> para ver cómo se mueve el ranking — en algunos fondos el orden cambia bastante.
+        <span className="text-blue-600 dark:text-blue-400 font-medium">Cambia el fondo y el período</span> para ver cómo se mueve el ranking — en algunos fondos el orden cambia bastante.
       </p>
 
       <div className="flex gap-3 mb-4 flex-wrap">
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Fondo</label>
+          <label className="text-xs text-gray-500 dark:text-slate-400 block mb-1">Fondo</label>
           <div className="flex gap-1">
             {fondoList.map(f => (
-              <button
-                key={f}
-                onClick={() => setFondo(f)}
-                className={`px-3 py-1 rounded text-sm font-medium border ${
-                  fondo === f
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-600 border-gray-200'
-                }`}
-              >
+              <button key={f} onClick={() => setFondo(f)}
+                className={`${btnBase} ${fondo === f ? btnActive : btnInactive}`}>
                 {f}
               </button>
             ))}
           </div>
         </div>
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Período</label>
+          <label className="text-xs text-gray-500 dark:text-slate-400 block mb-1">Período</label>
           <div className="flex gap-1">
             {periodList.map(p => (
-              <button
-                key={p.key}
-                onClick={() => setPeriod(p.key)}
-                className={`px-3 py-1 rounded text-sm font-medium border ${
-                  period === p.key
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-600 border-gray-200'
-                }`}
-              >
+              <button key={p.key} onClick={() => setPeriod(p.key)}
+                className={`${btnBase} ${period === p.key ? btnActive : btnInactive}`}>
                 {p.label}
               </button>
             ))}
@@ -103,9 +91,9 @@ export default function RankingTable({ rentabilidades }) {
         </div>
       </div>
 
-      <div className="rounded-xl overflow-x-auto border border-gray-200">
+      <div className="rounded-xl overflow-x-auto border border-gray-200 dark:border-slate-700">
         <table className="w-full text-sm min-w-[320px]">
-          <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+          <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 text-xs uppercase">
             <tr>
               <th className="px-3 py-3 text-left">#</th>
               <th className="px-3 py-3 text-left">AFP</th>
@@ -115,22 +103,22 @@ export default function RankingTable({ rentabilidades }) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
             {rows.map((row, i) => {
               const rank    = row.value != null ? i + 1 : null
               const medal   = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
               const isWorst = row === worst
               return (
-                <tr key={row.afp} className="bg-white hover:bg-gray-50">
-                  <td className="px-3 py-3 text-gray-400 text-base">
+                <tr key={row.afp} className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                  <td className="px-3 py-3 text-gray-400 dark:text-slate-500 text-base">
                     {medal ?? (rank ?? '—')}
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <AfpLogo afp={row.afp} className="h-5 w-10 shrink-0" />
-                      <span className="font-medium text-gray-800">{row.afp}</span>
+                      <span className="font-medium text-gray-800 dark:text-slate-200">{row.afp}</span>
                       {isWorst && (
-                        <span className="hidden sm:inline text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                        <span className="hidden sm:inline text-xs bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-1.5 py-0.5 rounded">
                           menor rentabilidad
                         </span>
                       )}
@@ -142,7 +130,7 @@ export default function RankingTable({ rentabilidades }) {
                         {formatPct(row.value, 2)}
                       </span>
                     ) : (
-                      <span className="text-gray-400 text-xs">
+                      <span className="text-gray-400 dark:text-slate-500 text-xs">
                         Sin datos{row.limited ? <span className="hidden sm:inline"> — desde {row.limited}</span> : ''}
                       </span>
                     )}
@@ -155,7 +143,7 @@ export default function RankingTable({ rentabilidades }) {
       </div>
 
       {gap != null ? (
-        <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
+        <div className="mt-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
           <p className="font-semibold mb-1">¿Qué significa esto para mí?</p>
           <p>
             En los últimos <strong>{n} años</strong>, la brecha entre{' '}
@@ -164,8 +152,8 @@ export default function RankingTable({ rentabilidades }) {
           </p>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             <span>Si tienes</span>
-            <div className="flex items-center border border-blue-300 rounded bg-white text-gray-800 text-sm">
-              <span className="pl-2 text-gray-400 select-none">$</span>
+            <div className="flex items-center border border-blue-300 dark:border-blue-700 rounded bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm">
+              <span className="pl-2 text-gray-400 dark:text-slate-500 select-none">$</span>
               <input
                 type="text"
                 inputMode="numeric"
@@ -183,7 +171,7 @@ export default function RankingTable({ rentabilidades }) {
           </div>
         </div>
       ) : (
-        <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-900">
+        <div className="mt-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
           <strong>¿Qué significa esto para mí?</strong> No hay suficientes AFPs con
           datos para este período. Prueba con un período más corto o un fondo diferente.
         </div>

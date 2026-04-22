@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Class-based dark mode for Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
+/* Chart colors that switch with dark mode */
+:root {
+  --chart-grid:  #f3f4f6;
+  --chart-axis:  #6b7280;
+  --chart-ref:   #d1d5db;
+}
+.dark {
+  --chart-grid:  #334155;
+  --chart-axis:  #94a3b8;
+  --chart-ref:   #475569;
+}

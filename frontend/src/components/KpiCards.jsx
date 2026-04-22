@@ -8,17 +8,14 @@ function formatFecha(fecha) {
   return `${MESES[parseInt(month, 10) - 1]} ${year}`
 }
 
-// Reference salary for peso equivalents (~median Chilean formal worker)
 const SUELDO_REF = 800_000
 
 export default function KpiCards({ comisiones, afiliados }) {
   if (!comisiones || !afiliados) return null
 
-  // "Sistema" row holds the authoritative SP total
   const sistema = afiliados.find(r => r.afp === 'Sistema')
   const totalAfiliados = sistema?.afiliados ?? null
 
-  // Largest AFP by affiliates (excluding Sistema row)
   const afpRows = afiliados.filter(r => r.afp !== 'Sistema')
   const largest = afpRows.reduce((best, r) =>
     (r.afiliados ?? 0) > (best.afiliados ?? 0) ? r : best
@@ -78,11 +75,11 @@ export default function KpiCards({ comisiones, afiliados }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       {cards.map(card => (
-        <div key={card.label} className={`bg-white rounded-2xl shadow-sm p-5 border-t-4 ${card.accent}`}>
+        <div key={card.label} className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-5 border-t-4 ${card.accent} transition-colors duration-200`}>
           <div className="mb-3">{card.icon}</div>
-          <p className="text-sm text-gray-500 mb-1">{card.label}</p>
-          <p className="text-2xl font-bold text-gray-900">{card.value}</p>
-          <p className="text-xs text-gray-400 mt-2">{card.note}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mb-1">{card.label}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{card.value}</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">{card.note}</p>
         </div>
       ))}
     </div>
