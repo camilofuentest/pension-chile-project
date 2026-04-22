@@ -33,7 +33,7 @@ const FONDOS = [
 
 export default function FondosExplainer() {
   return (
-    <section className="px-6 py-6">
+    <section className="px-4 py-6 sm:px-6">
       <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">Los 5 fondos de pensión</h2>
       <p className="text-sm text-gray-500 mb-4">
         Tu AFP invierte tu dinero en uno de estos fondos según tu edad y perfil de riesgo.

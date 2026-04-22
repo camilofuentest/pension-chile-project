@@ -52,7 +52,7 @@ export default function RankingTable({ rentabilidades }) {
     : null
 
   return (
-    <section className="px-6 py-6">
+    <section className="px-4 py-6 sm:px-6">
       <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">Ranking de rentabilidad</h2>
       <p className="text-sm text-gray-500 mb-1">
         La <strong>rentabilidad real</strong> es cuánto creció tu dinero <em>por encima de la inflación</em>.
@@ -103,13 +103,16 @@ export default function RankingTable({ rentabilidades }) {
         </div>
       </div>
 
-      <div className="rounded-xl overflow-hidden border border-gray-200">
-        <table className="w-full text-sm">
+      <div className="rounded-xl overflow-x-auto border border-gray-200">
+        <table className="w-full text-sm min-w-[320px]">
           <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
             <tr>
-              <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">AFP</th>
-              <th className="px-4 py-3 text-right">Rentabilidad real anual promedio</th>
+              <th className="px-3 py-3 text-left">#</th>
+              <th className="px-3 py-3 text-left">AFP</th>
+              <th className="px-3 py-3 text-right">
+                <span className="hidden sm:inline">Rentabilidad real anual promedio</span>
+                <span className="sm:hidden">Rentab. anual</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -119,28 +122,28 @@ export default function RankingTable({ rentabilidades }) {
               const isWorst = row === worst
               return (
                 <tr key={row.afp} className="bg-white hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-400 text-base">
+                  <td className="px-3 py-3 text-gray-400 text-base">
                     {medal ?? (rank ?? '—')}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <AfpLogo afp={row.afp} className="h-5 w-10 shrink-0" />
                       <span className="font-medium text-gray-800">{row.afp}</span>
                       {isWorst && (
-                        <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                        <span className="hidden sm:inline text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
                           menor rentabilidad
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-3 py-3 text-right">
                     {row.value != null ? (
                       <span className={`font-bold ${row.value >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                         {formatPct(row.value, 2)}
                       </span>
                     ) : (
                       <span className="text-gray-400 text-xs">
-                        Sin datos{row.limited ? ` — AFP más nueva (desde ${row.limited})` : ''}
+                        Sin datos{row.limited ? <span className="hidden sm:inline"> — desde {row.limited}</span> : ''}
                       </span>
                     )}
                   </td>
@@ -171,12 +174,12 @@ export default function RankingTable({ rentabilidades }) {
                   const raw = parseInt(e.target.value.replace(/\./g, '').replace(/[^\d]/g, ''), 10)
                   setAhorro(isNaN(raw) ? 0 : raw)
                 }}
-                className="px-2 py-0.5 w-36 bg-transparent outline-none"
+                className="px-2 py-0.5 w-32 bg-transparent outline-none"
               />
             </div>
-            <span>ahorrados, la diferencia sería de</span>
+            <span>ahorrados, la diferencia sería</span>
             <strong>{formatPesos(impacto)}</strong>
-            <span>al cabo de {n} años — sin aportar un peso adicional.</span>
+            <span>en {n} años.</span>
           </div>
         </div>
       ) : (

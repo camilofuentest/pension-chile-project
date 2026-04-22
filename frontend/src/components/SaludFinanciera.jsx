@@ -195,7 +195,7 @@ export default function SaludFinanciera({ financiero }) {
   if (!financiero) return null
 
   return (
-    <section className="px-6 py-6">
+    <section className="px-4 py-6 sm:px-6">
       <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">
         AFP como negocio: ¿cuánto gana cada AFP para sus dueños?
       </h2>

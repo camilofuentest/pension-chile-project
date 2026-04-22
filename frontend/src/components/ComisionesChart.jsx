@@ -22,14 +22,14 @@ export default function ComisionesChart({ comisiones }) {
   }))
 
   return (
-    <section className="px-6 py-6">
+    <section className="px-4 py-6 sm:px-6">
       <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">Comisiones AFP</h2>
       <p className="text-sm text-gray-500 mb-2">
         La comisión es el porcentaje de tu sueldo imponible que se lleva la AFP cada mes por administrar tu cuenta.
         Una comisión más baja significa más dinero que queda en tu bolsillo cada mes — aunque la decisión de AFP también depende de la rentabilidad que entrega.
       </p>
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <label className="text-sm text-gray-600 whitespace-nowrap">Con un sueldo de</label>
         <div className="border rounded px-2 py-1 text-sm w-36 flex items-center">
           <span className="text-gray-400 mr-1">$</span>
@@ -69,30 +69,30 @@ export default function ComisionesChart({ comisiones }) {
         </BarChart>
       </ResponsiveContainer>
 
-      <div className="mt-4 rounded-xl border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="mt-4 rounded-xl border border-gray-200 overflow-x-auto">
+        <table className="w-full text-sm min-w-[340px]">
           <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
             <tr>
-              <th className="px-4 py-2 text-left">AFP</th>
-              <th className="px-4 py-2 text-right">Comisión</th>
-              <th className="px-4 py-2 text-right">Te cuesta al mes</th>
-              <th className="px-4 py-2 text-right">Más caro que la más barata (al año)</th>
+              <th className="px-3 py-2 text-left">AFP</th>
+              <th className="px-3 py-2 text-right">Comisión</th>
+              <th className="px-3 py-2 text-right">Al mes</th>
+              <th className="px-3 py-2 text-right hidden sm:table-cell">Diferencia al año</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {chartData.map((row, i) => (
               <tr key={row.afp} className={i === 0 ? 'bg-green-50' : i === chartData.length - 1 ? 'bg-red-50' : 'bg-white'}>
-                <td className="px-4 py-2">
+                <td className="px-3 py-2">
                   <div className="flex items-center gap-2">
                     <AfpLogo afp={row.afp} className="h-5 w-10 shrink-0" />
                     <span className="font-medium text-gray-800">{row.afp}</span>
-                    {i === 0 && <span className="text-xs text-green-600">más barata</span>}
-                    {i === chartData.length - 1 && <span className="text-xs text-red-500">más cara</span>}
+                    {i === 0 && <span className="hidden sm:inline text-xs text-green-600">más barata</span>}
+                    {i === chartData.length - 1 && <span className="hidden sm:inline text-xs text-red-500">más cara</span>}
                   </div>
                 </td>
-                <td className="px-4 py-2 text-right">{formatPct(row.comision, 2)}</td>
-                <td className="px-4 py-2 text-right font-medium">{formatPesos(row.costo_mes)}</td>
-                <td className="px-4 py-2 text-right text-red-500">
+                <td className="px-3 py-2 text-right">{formatPct(row.comision, 2)}</td>
+                <td className="px-3 py-2 text-right font-medium">{formatPesos(row.costo_mes)}</td>
+                <td className="px-3 py-2 text-right text-red-500 hidden sm:table-cell">
                   {row.diff_anual > 0 ? `+${formatPesos(row.diff_anual)}` : '—'}
                 </td>
               </tr>

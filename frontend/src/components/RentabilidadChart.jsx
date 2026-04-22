@@ -86,7 +86,7 @@ export default function RentabilidadChart({ rentabilidades }) {
   }
 
   return (
-    <section className="px-6 py-6">
+    <section className="px-4 py-6 sm:px-6">
       <h2 className="text-xl font-bold text-gray-800 mb-1 border-l-4 border-blue-600 pl-3">
         Rentabilidad por período de 12 meses
       </h2>
