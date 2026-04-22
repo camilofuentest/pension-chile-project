@@ -1,0 +1,9 @@
+[
+  { "afp": "Modelo",   "comision_pct": 0.58, "sis_pct": 1.49, "total_pct": 2.07, "tipo": "dependiente" },
+  { "afp": "Uno",      "comision_pct": 0.49, "sis_pct": 1.49, "total_pct": 1.98, "tipo": "dependiente" },
+  { "afp": "Hábitat",  "comision_pct": 0.95, "sis_pct": 1.49, "total_pct": 2.44, "tipo": "dependiente" },
+  { "afp": "Capital",  "comision_pct": 1.44, "sis_pct": 1.49, "total_pct": 2.93, "tipo": "dependiente" },
+  { "afp": "Cuprum",   "comision_pct": 1.44, "sis_pct": 1.49, "total_pct": 2.93, "tipo": "dependiente" },
+  { "afp": "PlanVital","comision_pct": 1.16, "sis_pct": 1.49, "total_pct": 2.65, "tipo": "dependiente" },
+  { "afp": "Provida",  "comision_pct": 1.45, "sis_pct": 1.49, "total_pct": 2.94, "tipo": "dependiente" }
+]

@@ -1,0 +1,6 @@
+{
+  "Capital":  { "year": [2022, 2023, 2024], "ingresos_mm": [44.1, 46.3, 48.2], "gastos_mm": [28.9, 30.1, 31.5], "resultado_mm": [15.2, 16.2, 16.7], "patrimonio_mm": [85.0, 88.5, 92.0], "roe_pct": [17.9, 18.3, 18.2], "margen_pct": [34.5, 35.0, 34.6] },
+  "Provida":  { "year": [2022, 2023, 2024], "ingresos_mm": [52.0, 54.1, 56.3], "gastos_mm": [35.0, 36.2, 37.5], "resultado_mm": [17.0, 17.9, 18.8], "patrimonio_mm": [95.0, 99.0, 103.0], "roe_pct": [17.9, 18.1, 18.3], "margen_pct": [32.7, 33.1, 33.4] },
+  "Modelo":   { "year": [2022, 2023, 2024], "ingresos_mm": [18.2, 19.5, 21.0], "gastos_mm": [11.0, 11.8, 12.5], "resultado_mm": [7.2, 7.7, 8.5], "patrimonio_mm": [40.0, 43.0, 46.0], "roe_pct": [18.0, 17.9, 18.5], "margen_pct": [39.6, 39.5, 40.5] },
+  "Uno":      { "year": [2022, 2023, 2024], "ingresos_mm": [4.1, 5.2, 6.3], "gastos_mm": [3.5, 4.0, 4.5], "resultado_mm": [0.6, 1.2, 1.8], "patrimonio_mm": [10.0, 11.0, 12.5], "roe_pct": [6.0, 10.9, 14.4], "margen_pct": [14.6, 23.1, 28.6] }
+}

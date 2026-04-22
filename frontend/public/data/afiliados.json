@@ -1,0 +1,50 @@
+[
+  {
+    "afp": "Sistema",
+    "afiliados": 12149568,
+    "fecha": "2026-02-01",
+    "market_share_pct": null
+  },
+  {
+    "afp": "Capital",
+    "afiliados": 1415328,
+    "fecha": "2026-02-01",
+    "market_share_pct": 11.65
+  },
+  {
+    "afp": "Cuprum",
+    "afiliados": 553918,
+    "fecha": "2026-02-01",
+    "market_share_pct": 4.56
+  },
+  {
+    "afp": "Habitat",
+    "afiliados": 1714571,
+    "fecha": "2026-02-01",
+    "market_share_pct": 14.11
+  },
+  {
+    "afp": "Modelo",
+    "afiliados": 2794052,
+    "fecha": "2026-02-01",
+    "market_share_pct": 23.0
+  },
+  {
+    "afp": "PlanVital",
+    "afiliados": 1584326,
+    "fecha": "2026-02-01",
+    "market_share_pct": 13.04
+  },
+  {
+    "afp": "Provida",
+    "afiliados": 2529379,
+    "fecha": "2026-02-01",
+    "market_share_pct": 20.82
+  },
+  {
+    "afp": "Uno",
+    "afiliados": 1557994,
+    "fecha": "2026-02-01",
+    "market_share_pct": 12.82
+  }
+]

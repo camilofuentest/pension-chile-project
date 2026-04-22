@@ -1,0 +1,40 @@
+name: Update AFP Data
+
+on:
+  schedule:
+    # First day of each month at 8:00 AM Santiago time (UTC-3 → 11:00 UTC)
+    - cron: "0 11 1 * *"
+  workflow_dispatch:  # allow manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ETL pipeline
+        run: python -m etl.run_pipeline
+
+      - name: Commit updated JSON files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/output/*.json frontend/public/data/*.json
+          git diff --staged --quiet || git commit -m "chore: update AFP data $(date +'%Y-%m-%d')"
+
+      - name: Push changes
+        run: git push

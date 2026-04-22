@@ -1,0 +1,30 @@
+[
+  {
+    "afp": "Capital",
+    "comision_pct": 1.44
+  },
+  {
+    "afp": "Cuprum",
+    "comision_pct": 1.44
+  },
+  {
+    "afp": "Habitat",
+    "comision_pct": 1.27
+  },
+  {
+    "afp": "Modelo",
+    "comision_pct": 0.58
+  },
+  {
+    "afp": "PlanVital",
+    "comision_pct": 1.16
+  },
+  {
+    "afp": "Provida",
+    "comision_pct": 1.45
+  },
+  {
+    "afp": "Uno",
+    "comision_pct": 0.46
+  }
+]

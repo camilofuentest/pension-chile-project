@@ -1,0 +1,9 @@
+[
+  { "afp": "Provida",  "year": 2024, "afiliados": 3800000, "aum_uf": 485000000 },
+  { "afp": "Capital",  "year": 2024, "afiliados": 3200000, "aum_uf": 410000000 },
+  { "afp": "Hábitat",  "year": 2024, "afiliados": 2100000, "aum_uf": 280000000 },
+  { "afp": "Cuprum",   "year": 2024, "afiliados": 800000,  "aum_uf": 195000000 },
+  { "afp": "Modelo",   "year": 2024, "afiliados": 1500000, "aum_uf": 85000000  },
+  { "afp": "PlanVital","year": 2024, "afiliados": 900000,  "aum_uf": 60000000  },
+  { "afp": "Uno",      "year": 2024, "afiliados": 400000,  "aum_uf": 15000000  }
+]
