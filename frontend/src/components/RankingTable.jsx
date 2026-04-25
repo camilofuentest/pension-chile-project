@@ -25,7 +25,7 @@ export default function RankingTable({ rentabilidades }) {
   const lastMonthLabel = firstEntry?.last_month_label ?? ''
 
   const rows = Object.values(rentabilidades)
-    .filter(d => d.fondo === fondo)
+    .filter(d => d.fondo === fondo && d.afp !== 'Sistema')
     .map(d => ({
       afp:     d.afp,
       value:   d.periodos?.[period] ?? null,
