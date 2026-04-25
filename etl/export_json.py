@@ -146,8 +146,14 @@ def copy_to_frontend() -> None:
         log.info("Copied → %s", dest)
 
 
+def export_meta() -> None:
+    from datetime import date
+    _write(DATA_OUTPUT / "meta.json", {"fetched_at": date.today().isoformat()})
+
+
 def run() -> None:
     DATA_OUTPUT.mkdir(parents=True, exist_ok=True)
+    export_meta()
     export_rentabilidades()
     export_comisiones()
     export_financiero()

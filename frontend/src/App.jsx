@@ -30,9 +30,10 @@ const MESES = [
   'enero','febrero','marzo','abril','mayo','junio',
   'julio','agosto','septiembre','octubre','noviembre','diciembre'
 ]
-function fechaHoy() {
-  const d = new Date()
-  return `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`
+function formatFetchDate(isoDate) {
+  if (!isoDate) return '—'
+  const [year, month, day] = isoDate.split('-').map(Number)
+  return `${day} de ${MESES[month - 1]} de ${year}`
 }
 
 function SunIcon() {
@@ -79,7 +80,7 @@ export default function App() {
   if (loading) return <LoadingState />
   if (error)   return <ErrorState error={error} />
 
-  const { rentabilidades, comisiones, financiero, afiliados } = data
+  const { rentabilidades, comisiones, financiero, afiliados, meta } = data
 
   const lastMonthLabel = rentabilidades
     ? Object.values(rentabilidades)[0]?.last_month_label
@@ -158,7 +159,7 @@ export default function App() {
             </a>.
           </p>
           <div className="flex gap-4 mt-3 text-xs text-gray-400 dark:text-slate-500 flex-wrap">
-            <span>📅 Consultado el {fechaHoy()}</span>
+            <span>📅 Datos obtenidos el {formatFetchDate(meta?.fetched_at)}</span>
             {lastMonthLabel && (
               <span>📊 Datos hasta {lastMonthLabel}</span>
             )}

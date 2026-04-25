@@ -38,11 +38,12 @@ export function useAfpData() {
 
     async function fetchAll() {
       try {
-        const [rentabilidades, comisiones, financiero, afiliados] = await Promise.all([
+        const [rentabilidades, comisiones, financiero, afiliados, meta] = await Promise.all([
           fetchJson('rentabilidades.json'),
           fetchJson('comisiones.json'),
           fetchJson('financiero.json'),
           fetchJson('afiliados.json'),
+          fetchJson('meta.json'),
         ])
 
         if (!cancelled) {
@@ -50,7 +51,7 @@ export function useAfpData() {
           if (!rentabilidades) {
             setError(new Error('No se encontró rentabilidades.json'))
           } else {
-            setData({ rentabilidades, comisiones, financiero, afiliados })
+            setData({ rentabilidades, comisiones, financiero, afiliados, meta })
             setError(null)
           }
         }
