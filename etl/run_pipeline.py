@@ -2,13 +2,15 @@
 run_pipeline.py — orchestrate the full ETL in sequence.
 
 Steps:
-  1. download          — fetch raw files from spensiones.cl
-  2. clean_*           — normalize each dataset into parquet
-  3. export_json       — write JSONs for the frontend
+  1. download          — fetch raw files from spensiones.cl (forced fresh)
+  2. scrape_*          — scrape rentabilidades + financiero from spensiones.cl
+  3. clean_*           — normalize each dataset into parquet
+  4. export_json       — write JSONs for the frontend
 
 Run:
     python -m etl.run_pipeline
-    python -m etl.run_pipeline --skip-download   (use existing raw files)
+    python -m etl.run_pipeline --skip-download   (offline: reuse existing raw files,
+                                                  skips both download and scrape steps)
 """
 
 import logging
@@ -48,11 +50,13 @@ def main(skip_download: bool = False) -> None:
     log.info("pension-chile ETL pipeline starting")
 
     if not skip_download:
-        from etl import download
-        _run_step("download", download.download_all)
+        from etl import download, scrape_rentabilidades, scrape_financiero
 
-    from etl import scrape_rentabilidades
-    _run_step("scrape_rentabilidades", scrape_rentabilidades.run)
+        # force=True so monthly-updating source files (afiliados, comisiones)
+        # are always re-fetched; download.py skips existing files otherwise.
+        _run_step("download", lambda: download.download_all(force=True))
+        _run_step("scrape_rentabilidades", scrape_rentabilidades.run)
+        _run_step("scrape_financiero", scrape_financiero.run)
 
     _run_step("clean_rentabilidades", clean_rentabilidades.run)
     _run_step("clean_comisiones",     clean_comisiones.run)
