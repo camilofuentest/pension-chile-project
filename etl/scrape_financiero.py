@@ -34,6 +34,7 @@ import requests
 
 from etl.config import (
     AFP_IDU_MAP,
+    AFP_LIMITED_HISTORY,
     FINANCIERO_START_YEAR,
     FINANCIERO_URL,
     RAW_ESTADOS_FIN,
@@ -115,15 +116,26 @@ def _extract_codes(table: pd.DataFrame, codes: dict[str, str]) -> dict:
     return result
 
 
+def _years_for(afp: str) -> range:
+    """
+    Years whose Q4 (December) statement can exist for this AFP.
+
+    - Starts at the AFP's founding year (e.g. Uno → 2019), never before
+      FINANCIERO_START_YEAR — earlier periods always 404.
+    - Excludes the current year: the December statement of year Y is only
+      published during Y+1, so requesting it now always returns 404.
+    """
+    start = max(FINANCIERO_START_YEAR, AFP_LIMITED_HISTORY.get(afp, FINANCIERO_START_YEAR))
+    return range(start, date.today().year)
+
+
 def scrape() -> pd.DataFrame:
-    current_year = date.today().year
-    years        = list(range(FINANCIERO_START_YEAR, current_year + 1))
-    records      = []
+    records = []
 
     for afp, idu in AFP_IDU_MAP.items():
         log.info("Scraping %s (idu=%d)", afp, idu)
 
-        for year in years:
+        for year in _years_for(afp):
             row = {"afp": afp, "year": year}
 
             # --- P&L table ---

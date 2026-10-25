@@ -5,7 +5,8 @@ Steps:
   1. download          — fetch raw files from spensiones.cl (forced fresh)
   2. scrape_*          — scrape rentabilidades + financiero from spensiones.cl
   3. clean_*           — normalize each dataset into parquet
-  4. export_json       — write JSONs for the frontend
+  4. validate          — block export if fresh data regressed vs committed JSONs
+  5. export_json       — write JSONs for the frontend
 
 Run:
     python -m etl.run_pipeline
@@ -43,6 +44,7 @@ def main(skip_download: bool = False) -> None:
         clean_comisiones,
         clean_financiero,
         clean_afiliados,
+        validate,
         export_json,
     )
 
@@ -62,6 +64,7 @@ def main(skip_download: bool = False) -> None:
     _run_step("clean_comisiones",     clean_comisiones.run)
     _run_step("clean_financiero",     clean_financiero.run)
     _run_step("clean_afiliados",      clean_afiliados.run)
+    _run_step("validate",             validate.run)
     _run_step("export_json",          export_json.run)
 
     log.info("=" * 50)

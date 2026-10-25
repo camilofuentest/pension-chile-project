@@ -124,7 +124,7 @@ npm run dev
 | Afiliados y cuota de mercado | spensiones.cl (Excel) | Descarga directa |
 | Estados financieros AFP | spensiones.cl/apps/loadEstadisticas | Scraping HTML 2010→hoy |
 
-Datos actualizados automáticamente el primer día de cada mes via GitHub Actions.
+Datos actualizados automáticamente los días 1 y 10 de cada mes via GitHub Actions (el día 10 captura las rentabilidades que la SP publica en los primeros días hábiles).
 
 ---
 

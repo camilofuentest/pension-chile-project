@@ -133,7 +133,9 @@ def parse_month(tables: list, year: int, month: int) -> pd.DataFrame:
         # AFP_NAME_MAP normalizes it to "Sistema" along with all other AFP names.
         # .str.strip() removes leading/trailing whitespace (e.g. "CUPRUM " → "CUPRUM")
         # .replace(AFP_NAME_MAP) applies our dictionary:
-        #   "BANSANDER" → "Capital", "HABITAT" → "Hábitat", "SANTA MARIA" → "Hábitat", etc.
+        #   "CUPRUM" → "Cuprum", "HABITAT" → "Habitat", "SISTEMA" → "Sistema", etc.
+        #   "BANSANDER" and "SANTA MARIA" stay as their own historical entities
+        #   ("Bansander", "Santa Maria") — they are NOT merged into Capital/Habitat.
         result["afp"] = result["afp"].str.strip().replace(AFP_NAME_MAP)
 
         # --- Convert return value from string to float ---
