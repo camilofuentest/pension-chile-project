@@ -6,6 +6,10 @@ const AFP_LIMITED      = { Modelo: 2010, Uno: 2019 }
 const PERIOD_YEARS     = { '2y': 2, '5y': 5, '10y': 10, '15y': 15 }
 const AHORRO_DEFAULT   = 10_000_000
 
+// "Capital y Cuprum", "A, B y C"
+const joinNames = names =>
+  names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}`
+
 export default function RankingTable({ rentabilidades }) {
   const [fondo,  setFondo]  = useState('C')
   const [period, setPeriod] = useState('10y')
@@ -34,14 +38,22 @@ export default function RankingTable({ rentabilidades }) {
     .sort((a, b) => {
       if (a.value == null) return 1
       if (b.value == null) return -1
-      return b.value - a.value
+      // Ties (same value shown on screen) → alphabetical, so no AFP is favored
+      return b.value - a.value || a.afp.localeCompare(b.afp)
     })
 
   const withData = rows.filter(r => r.value != null)
   const best  = withData[0]
   const worst = withData[withData.length - 1]
+
+  // Rank by the value the user sees (2 decimals): equal values share the same place,
+  // and the next place is skipped (1, 1, 3) — like two gold medals at the Olympics
+  const rankOf   = row => row.value == null ? null : withData.findIndex(r => r.value === row.value) + 1
+  const isTied   = row => row.value != null && withData.filter(r => r.value === row.value).length > 1
+  const bestAfps  = best  ? withData.filter(r => r.value === best.value).map(r => r.afp)  : []
+  const worstAfps = worst ? withData.filter(r => r.value === worst.value).map(r => r.afp) : []
   const n     = PERIOD_YEARS[period]
-  const gap   = best && worst && best !== worst
+  const gap   = best && worst && best.value !== worst.value
     ? parseFloat((best.value - worst.value).toFixed(2))
     : null
   const ahorroN = Number(ahorro) || AHORRO_DEFAULT
@@ -104,10 +116,10 @@ export default function RankingTable({ rentabilidades }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-            {rows.map((row, i) => {
-              const rank    = row.value != null ? i + 1 : null
+            {rows.map(row => {
+              const rank    = rankOf(row)
               const medal   = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
-              const isWorst = row === worst
+              const isWorst = gap != null && row.value === worst.value
               return (
                 <tr key={row.afp} className="bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <td className="px-3 py-3 text-gray-400 dark:text-slate-500 text-base">
@@ -117,6 +129,12 @@ export default function RankingTable({ rentabilidades }) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <AfpLogo afp={row.afp} className="h-5 w-10 shrink-0" />
                       <span className="font-medium text-gray-800 dark:text-slate-200">{row.afp}</span>
+                      {isTied(row) && (
+                        <span className="text-xs bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded"
+                              title="Misma rentabilidad con dos decimales: comparten el puesto">
+                          empate
+                        </span>
+                      )}
                       {isWorst && (
                         <span className="hidden sm:inline text-xs bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-1.5 py-0.5 rounded">
                           menor rentabilidad
@@ -147,7 +165,10 @@ export default function RankingTable({ rentabilidades }) {
           <p className="font-semibold mb-1">¿Qué significa esto para mí?</p>
           <p>
             En los últimos <strong>{n} años</strong>, la brecha entre{' '}
-            <strong>{best.afp}</strong> (la mejor) y <strong>{worst.afp}</strong> (la peor)
+            <strong>{joinNames(bestAfps)}</strong>{' '}
+            ({bestAfps.length > 1 ? 'empatadas en el primer lugar' : 'la mejor'}) y{' '}
+            <strong>{joinNames(worstAfps)}</strong>{' '}
+            ({worstAfps.length > 1 ? 'empatadas en el último lugar' : 'la peor'})
             fue de <strong>{formatPct(gap, 2)} al año</strong>.
           </p>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
