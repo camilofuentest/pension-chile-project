@@ -13,6 +13,8 @@ Checks:
                   Sistema total within ±10% of baseline
   comisiones      no AFP missing · every comision_pct between 0 and 5
   financiero      no AFP missing · latest year not lower than baseline
+  rent vs SP      monthly real returns computed from valor cuota + UF match the
+                  SP's own published monthly figures (last 24 months, ±0.03 pp)
 
 A missing processed parquet is an error. A missing baseline JSON (first run)
 only skips the comparison, with a warning.
@@ -26,7 +28,7 @@ import logging
 
 import pandas as pd
 
-from etl.config import DATA_OUTPUT, DATA_PROCESSED
+from etl.config import DATA_OUTPUT, DATA_PROCESSED, RAW_RENTABILIDADES
 from etl.export_json import MESES_ES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -37,6 +39,8 @@ MES_TO_NUM = {nombre: num for num, nombre in MESES_ES.items()}
 
 SISTEMA_MAX_CHANGE = 0.10   # afiliados Sistema total may move at most ±10% per run
 COMISION_MAX_PCT   = 5.0    # sanity ceiling — real commissions are ~0.5–1.5%
+SP_CHECK_MONTHS    = 24     # months compared against the SP's published returns
+SP_MAX_DIFF_PP     = 0.03   # SP rounds to 2 decimals → normal diff is <= 0.005 pp
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +206,42 @@ def check_financiero(problems: list[str]) -> None:
         log.info("financiero OK: up to %d (baseline %d)", max_year, base_max)
 
 
+def check_rent_vs_sp(problems: list[str]) -> None:
+    """
+    Our returns come from valor cuota + UF. The SP also publishes monthly real
+    returns (rounded to 2 decimals). If both disagree by more than rounding,
+    something is wrong in the scrape or the formula (wrong UF date, wrong fondo...).
+    """
+    mensual = _load_parquet("rentabilidades_mensual", problems)
+    sp_path = RAW_RENTABILIDADES / "rentabilidades_raw.parquet"
+    if mensual is None:
+        return
+    if not sp_path.exists():
+        log.warning("rent vs SP: %s not found - cross-check skipped", sp_path)
+        return
+
+    sp = pd.read_parquet(sp_path)
+    # merge = SQL join on the shared keys; suffixes rename the two rent_real columns
+    joined = mensual.merge(sp, on=["afp", "fondo", "year", "month"], suffixes=("_vc", "_sp"))
+    joined = joined.dropna(subset=["rent_real_vc", "rent_real_sp"])
+    if joined.empty:
+        problems.append("rent vs SP: no overlapping months between valor cuota and SP data")
+        return
+
+    seq    = joined["year"] * 12 + joined["month"]
+    recent = joined[seq > seq.max() - SP_CHECK_MONTHS].copy()
+    recent["diff"] = (recent["rent_real_vc"] - recent["rent_real_sp"]).abs()
+    off = recent[recent["diff"] > SP_MAX_DIFF_PP]
+
+    if not off.empty:
+        sample = off.sort_values("diff", ascending=False).head(5)
+        detail = ", ".join(f"{r.afp} {r.fondo} {r.year}-{r.month:02d} ({r.diff:.3f} pp)"
+                           for r in sample.itertuples())
+        problems.append(f"rent vs SP: {len(off)} monthly returns differ > {SP_MAX_DIFF_PP} pp: {detail}")
+    else:
+        log.info("rent vs SP OK: %d AFP-months, max diff %.4f pp", len(recent), recent["diff"].max())
+
+
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -212,6 +252,7 @@ def run() -> None:
     check_afiliados(problems)
     check_comisiones(problems)
     check_financiero(problems)
+    check_rent_vs_sp(problems)
 
     if problems:
         for p in problems:

@@ -3,7 +3,8 @@ run_pipeline.py — orchestrate the full ETL in sequence.
 
 Steps:
   1. download          — fetch raw files from spensiones.cl (forced fresh)
-  2. scrape_*          — scrape rentabilidades + financiero from spensiones.cl
+  2. scrape_*          — scrape valor cuota, UF, rentabilidades (SP cross-check)
+                         and financiero
   3. clean_*           — normalize each dataset into parquet
   4. validate          — block export if fresh data regressed vs committed JSONs
   5. export_json       — write JSONs for the frontend
@@ -52,11 +53,20 @@ def main(skip_download: bool = False) -> None:
     log.info("pension-chile ETL pipeline starting")
 
     if not skip_download:
-        from etl import download, scrape_rentabilidades, scrape_financiero
+        from etl import (
+            download,
+            scrape_financiero,
+            scrape_rentabilidades,
+            scrape_uf,
+            scrape_valor_cuota,
+        )
 
         # force=True so monthly-updating source files (afiliados, comisiones)
         # are always re-fetched; download.py skips existing files otherwise.
         _run_step("download", lambda: download.download_all(force=True))
+        _run_step("scrape_valor_cuota",    scrape_valor_cuota.run)
+        _run_step("scrape_uf",             scrape_uf.run)
+        # SP's published monthly returns — only used to cross-check ours in validate
         _run_step("scrape_rentabilidades", scrape_rentabilidades.run)
         _run_step("scrape_financiero", scrape_financiero.run)
 

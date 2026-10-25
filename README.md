@@ -33,9 +33,11 @@ pension-chile-project/
 │       └── financiero.json
 ├── etl/
 │   ├── config.py                  ← constantes, rutas, mapa de nombres AFP
-│   ├── scrape_rentabilidades.py   ← POST scraper → parquet
+│   ├── scrape_valor_cuota.py      ← valor cuota diario por AFP/fondo → parquet
+│   ├── scrape_uf.py               ← UF diaria (mindicador.cl) → parquet
+│   ├── scrape_rentabilidades.py   ← rentabilidad mensual SP (chequeo cruzado)
 │   ├── scrape_financiero.py       ← scraper estados financieros → parquet
-│   ├── clean_rentabilidades.py    ← mensual → ventanas rolling, períodos
+│   ├── clean_rentabilidades.py    ← valor cuota + UF → ventanas rolling, períodos
 │   ├── clean_comisiones.py        ← XLS → comisiones.parquet
 │   ├── clean_afiliados.py         ← XLS → afiliados.parquet
 │   ├── clean_financiero.py        ← raw → financiero.parquet + ROE/ROA
@@ -93,7 +95,9 @@ pip install -r requirements.txt
 python -m etl.run_pipeline
 
 # O paso a paso:
-python -m etl.scrape_rentabilidades   # rentabilidades 2006→hoy
+python -m etl.scrape_valor_cuota      # valor cuota diario, últimos 16 años
+python -m etl.scrape_uf               # UF diaria
+python -m etl.scrape_rentabilidades   # rentabilidad mensual SP (para validar)
 python -m etl.scrape_financiero       # estados financieros 2010→hoy
 python -m etl.clean_rentabilidades
 python -m etl.clean_comisiones
@@ -119,7 +123,9 @@ npm run dev
 
 | Dataset | Fuente | Método |
 |---|---|---|
-| Rentabilidad real fondos A–E | spensiones.cl/apps/rentabilidad | Scraping POST mensual 2006→hoy |
+| Valor cuota fondos A–E | spensiones.cl/apps/valoresCuotaFondo | Descarga diaria, últimos 16 años |
+| UF | mindicador.cl (serie del Banco Central) | API JSON |
+| Rentabilidad real mensual (validación) | spensiones.cl/apps/rentabilidad | Scraping POST mensual 2006→hoy |
 | Comisiones vigentes | spensiones.cl (Excel) | Descarga directa |
 | Afiliados y cuota de mercado | spensiones.cl (Excel) | Descarga directa |
 | Estados financieros AFP | spensiones.cl/apps/loadEstadisticas | Scraping HTML 2010→hoy |
@@ -131,7 +137,7 @@ Datos actualizados automáticamente los días 1 y 10 de cada mes via GitHub Acti
 ## Decisiones técnicas destacadas
 
 - **Ventanas rolling de 12 meses** en lugar de años calendario — evita que un año parcial distorsione los promedios. El mes de referencia es el último con datos reales, no el último en el archivo.
-- **Compounding geométrico** para agregar retornos mensuales a anuales — matemáticamente correcto.
+- **Rentabilidad real punto a punto desde el valor cuota**: `(VC_fin / VC_inicio) / (UF_fin / UF_inicio) − 1`, con valores al último día de cada mes. Es el mismo cálculo de la SP; evita el error de redondeo que se acumula al encadenar las rentabilidades mensuales publicadas con solo 2 decimales. Los períodos de 2, 5, 10 y 15 años se anualizan con `(1 + r)^(1/años) − 1`. El "Sistema" se construye como un índice ponderado por patrimonio de las AFP. Cada mes se valida contra las rentabilidades mensuales publicadas por la SP (±0,03 pp).
 - **ROE con encaje** — ganancia total / patrimonio total. Ambos términos incluyen el efecto del encaje, lo que da el ROE estándar desde el punto de vista del accionista.
 - **PlanVital coalescing** — el Excel de SP publica la misma AFP en hasta 3 columnas con variantes de espaciado. Se resuelve con `bfill(axis=1)`.
 - **Logos AFP** descargados desde sitios oficiales y servidos localmente para evitar dependencias externas.

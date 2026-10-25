@@ -109,6 +109,21 @@ RENT_FORM_BASE = {
 RENT_START_YEAR = 2006
 
 # ---------------------------------------------------------------------------
+# Valor cuota + UF — basis of the real return calculation
+# Point-to-point real return: (VC_end / VC_start) / (UF_end / UF_start) - 1
+# Avoids the accumulated rounding of chaining SP's monthly returns, which are
+# published with only 2 decimals.
+# ---------------------------------------------------------------------------
+VALOR_CUOTA_URL = "https://www.spensiones.cl/apps/valoresCuotaFondo/vcfAFPxls.php"
+UF_API_URL      = "https://mindicador.cl/api/uf/{year}"   # same series as Banco Central
+
+# Years of history to download: 15 years of windows + 1 year of margin
+VALOR_CUOTA_YEARS_BACK = 16
+
+RAW_VALOR_CUOTA = DATA_RAW / "valor_cuota"
+RAW_UF          = DATA_RAW / "uf"
+
+# ---------------------------------------------------------------------------
 # SP data sources
 # Fill in the real URLs after inspecting www.spensiones.cl manually.
 # Format: { key: { "url": "...", "filename": "...", "raw_dir": Path } }
